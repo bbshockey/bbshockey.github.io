@@ -222,49 +222,72 @@
         left: 0.75rem;
       }
 
-      /* #intro becomes a full-viewport overlay with named areas */
+      /* Full-viewport overlay, all children absolutely placed */
       #intro {
         position: absolute;
         inset: 0;
-        right: auto;
-        top: auto;
+        right: 0;
+        top: 0;
         transform: none;
         width: 100%;
         height: 100%;
+        display: block;
         text-align: center;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: space-between;
-        padding: 7rem 1.5rem 1.5rem;
       }
 
-      /* Name sits at the top above the model */
+      /* Name sits high — well above the head */
       #intro .name {
-        font-size: clamp(2rem, 9vw, 3rem);
+        position: absolute;
+        top: 3.2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        white-space: nowrap;
+        font-size: clamp(1.8rem, 8.5vw, 2.8rem);
         margin-top: 0;
       }
 
       /* Tagline just below name */
       #intro .tagline {
-        font-size: 0.6rem;
-        margin-top: 0.5em;
-        line-height: 1.6;
-      }
-
-      /* Spacer so model shows through the middle */
-      #intro .spacer {
-        flex: 1;
-      }
-
-      /* Links sit at the bottom, surrounding the feet */
-      #intro .links {
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 0.9em 1.4em;
+        position: absolute;
+        top: 6.8rem;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.55rem;
         margin-top: 0;
-        width: 100%;
+        line-height: 1.7;
+        text-align: center;
+        white-space: nowrap;
       }
+
+      /* Spacer hidden — no longer needed */
+      #intro .spacer { display: none; }
+
+      /* Left column — Scholar + GitHub + LinkedIn */
+      #links-main {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.3em;
+        margin-top: 0;
+        width: auto;
+      }
+
+      /* Right column — Contact + CV + LiDAR */
+      #links-secondary {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 1.3em;
+        margin-top: 0;
+        width: auto;
+      }
+
       #intro .links a {
         font-size: 0.62rem;
       }
@@ -317,13 +340,13 @@
         <a href="https://sspb.rice.edu/" target="_blank" class="tagline-link">PhD Student at Rice University</a>
       </div>
       <div class="spacer"></div>
-      <div class="links">
+      <div class="links" id="links-main">
         <a href="https://scholar.google.com/citations?user=psg0-oAAAAAJ&hl=en" target="_blank">Scholar</a>
         <a href="https://github.com/bbshockey" target="_blank">GitHub</a>
         <a href="https://www.linkedin.com/in/bjorn-shockey-1419a2166/" target="_blank">LinkedIn</a>
-        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=bs128@rice.edu" target="_blank">Contact</a>
       </div>
-      <div class="links" style="margin-top:0.75em;">
+      <div class="links" id="links-secondary" style="margin-top:0.75em;">
+        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=bs128@rice.edu" target="_blank">Contact</a>
         <a href="#" target="_blank">CV</a>
         <a href="lab-tour.html">LiDAR Lab Tour</a>
       </div>
