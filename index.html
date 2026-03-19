@@ -169,7 +169,7 @@
     }
     #topnav a {
       font-family: var(--font-mono);
-      font-size: 0.85rem;
+      font-size: 1.05rem;
       font-weight: 400;
       color: var(--dim);
       text-decoration: none;
@@ -235,10 +235,10 @@
         text-align: center;
       }
 
-      /* Name sits high — well above the head */
+      /* Name sits above the head, closer to tagline */
       #intro .name {
         position: absolute;
-        top: 3.2rem;
+        top: 4.8rem;
         left: 50%;
         transform: translateX(-50%);
         white-space: nowrap;
@@ -249,7 +249,7 @@
       /* Tagline just below name */
       #intro .tagline {
         position: absolute;
-        top: 6.8rem;
+        top: 8rem;
         left: 50%;
         transform: translateX(-50%);
         font-size: 0.55rem;
@@ -262,30 +262,28 @@
       /* Spacer hidden — no longer needed */
       #intro .spacer { display: none; }
 
-      /* Left column — Scholar + GitHub + LinkedIn */
-      #links-main {
+      /* Both columns share identical vertical rhythm */
+      #links-main,
+      #links-secondary {
         position: absolute;
-        left: 1rem;
         top: 50%;
         transform: translateY(-50%);
         flex-direction: column;
-        align-items: flex-start;
-        gap: 1.3em;
+        gap: 1.6em;
         margin-top: 0;
         width: auto;
       }
 
+      /* Left column — Scholar + GitHub + LinkedIn */
+      #links-main {
+        left: 1rem;
+        align-items: flex-start;
+      }
+
       /* Right column — Contact + CV + LiDAR */
       #links-secondary {
-        position: absolute;
         right: 1rem;
-        top: 50%;
-        transform: translateY(-50%);
-        flex-direction: column;
         align-items: flex-end;
-        gap: 1.3em;
-        margin-top: 0;
-        width: auto;
       }
 
       #intro .links a {
