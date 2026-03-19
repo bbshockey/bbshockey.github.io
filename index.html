@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bjorn Shockey</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:   #0d0d0d;
+      --fg:   #f0ece4;
+      --dim:  #6b6860;
+      --accent: #c8b89a;
+      --font-serif: 'Cormorant Garamond', Georgia, serif;
+      --font-mono:  'IBM Plex Mono', 'Courier New', monospace;
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-mono);
+      overflow: hidden;
+    }
+
+    /* ── Google Fonts ── */
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=IBM+Plex+Mono:wght@300;400&display=swap');
+
+    /* ── Hero layout ── */
+    #hero {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+    }
+
+    /* ── Three.js canvas ── */
+    #canvas-wrap {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+    #canvas-wrap canvas {
+      display: block;
+      width: 100% !important;
+      height: 100% !important;
+    }
+
+    /* ── Text panel (right side) ── */
+    #intro {
+      position: absolute;
+      right: 8vw;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 10;
+      text-align: right;
+      pointer-events: none;
+    }
+
+    #intro .greeting {
+      font-family: var(--font-serif);
+      font-size: clamp(3rem, 7vw, 6.5rem);
+      font-weight: 300;
+      font-style: italic;
+      line-height: 1;
+      color: var(--fg);
+      letter-spacing: -0.01em;
+    }
+
+    #intro .name {
+      font-family: var(--font-serif);
+      font-size: clamp(2rem, 4.5vw, 4rem);
+      font-weight: 300;
+      line-height: 1.1;
+      color: var(--accent);
+      margin-top: 0.25em;
+      letter-spacing: 0.04em;
+    }
+
+    #intro .tagline {
+      font-family: var(--font-mono);
+      font-size: clamp(0.65rem, 1vw, 0.8rem);
+      font-weight: 300;
+      color: var(--dim);
+      margin-top: 1.5em;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      line-height: 1.8;
+    }
+
+    #intro .links {
+      margin-top: 2em;
+      display: flex;
+      gap: 1.5em;
+      justify-content: flex-end;
+      pointer-events: all;
+    }
+
+    #intro .links a {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      font-weight: 400;
+      color: var(--dim);
+      text-decoration: none;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border-bottom: 1px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    #intro .links a:hover {
+      color: var(--fg);
+      border-bottom-color: var(--accent);
+    }
+
+    /* ── Tagline link ── */
+    .tagline-link {
+      color: var(--dim);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+      pointer-events: all;
+    }
+    .tagline-link:hover {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    /* ── Top nav ── */
+    #topnav {
+      position: absolute;
+      top: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      display: flex;
+      gap: 2.5em;
+      align-items: center;
+      pointer-events: all;
+    }
+    /* ── Corner logos ── */
+    #corner-logo {
+      position: absolute;
+      top: 1.2rem;
+      right: 2rem;
+      z-index: 10;
+      width: 100px;
+      height: 100px;
+      pointer-events: none;
+    }
+    #corner-logo svg {
+      width: 100%;
+      height: 100%;
+    }
+    #corner-logo-left {
+      position: absolute;
+      top: 1.2rem;
+      left: 2rem;
+      z-index: 10;
+      width: 100px;
+      height: 100px;
+      pointer-events: none;
+    }
+    #corner-logo-left svg {
+      width: 100%;
+      height: 100%;
+    }
+    #topnav a {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      font-weight: 400;
+      color: var(--dim);
+      text-decoration: none;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      border-bottom: 1px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    #topnav a:hover {
+      color: var(--fg);
+      border-bottom-color: var(--accent);
+    }
+
+    /* ── Drag hint ── */
+    #hint {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--dim);
+      opacity: 1;
+      transition: opacity 1s;
+    }
+
+    /* ── Loading overlay ── */
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      transition: opacity 0.8s;
+    }
+    #loader.hidden { opacity: 0; pointer-events: none; }
+    #loader span {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--dim);
+    }
+  </style>
+</head>
+<body>
+
+  <div id="loader"><span>Loading</span></div>
+
+  <nav id="topnav">
+    <a href="https://www.silberglab.org/" target="_blank">Silberg Lab</a>
+    <a href="https://stadler.rice.edu/" target="_blank">Stadler Lab</a>
+  </nav>
+
+
+  <div id="corner-logo"><object type="image/svg+xml" data="logo.svg" style="width:100%;height:100%;pointer-events:none;"></object></div>
+  <div id="corner-logo-left"><object type="image/svg+xml" data="silberg_logo.svg" style="width:100%;height:100%;pointer-events:none;"></object></div>
+  <section id="hero">
+    <div id="canvas-wrap"></div>
+
+    <div id="intro">
+      <div class="greeting">Hello, World.</div>
+      <div class="name">Bjorn Shockey</div>
+      <div class="tagline">
+        Systems · Synthetic · Physical Biology<br>
+        <a href="https://sspb.rice.edu/" target="_blank" class="tagline-link">PhD Student at Rice University</a>
+      </div>
+      <div class="links">
+        <a href="https://scholar.google.com/citations?user=psg0-oAAAAAJ&hl=en" target="_blank">Scholar</a>
+        <a href="https://github.com/bbshockey" target="_blank">GitHub</a>
+        <a href="https://www.linkedin.com/in/bjorn-shockey-1419a2166/" target="_blank">LinkedIn</a>
+        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=bs128@rice.edu" target="_blank">Contact</a>
+      </div>
+      <div class="links" style="margin-top:0.75em;">
+        <a href="#" target="_blank">CV</a>
+        <a href="lab-tour.html">LiDAR Lab Tour</a>
+      </div>
+    </div>
+
+    <div id="hint">drag to interact</div>
+  </section>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+    const wrap   = document.getElementById('canvas-wrap');
+    const loader = document.getElementById('loader');
+    const hint   = document.getElementById('hint');
+
+    // ── Renderer ──
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(wrap.clientWidth, wrap.clientHeight);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping       = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.1;
+    wrap.appendChild(renderer.domElement);
+
+    // ── Scene & Camera ──
+    const scene  = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(45, wrap.clientWidth / wrap.clientHeight, 0.01, 100);
+    camera.position.set(-1.2, 1.4, 3.8);
+
+    // ── Lights ──
+    const ambient = new THREE.AmbientLight(0xffffff, 3.5);
+    scene.add(ambient);
+
+    // Front key — illuminates the face
+    const key = new THREE.DirectionalLight(0xfff8f0, 3.0);
+    key.position.set(1, 3, 6);
+    scene.add(key);
+
+    // Left fill
+    const fill = new THREE.DirectionalLight(0xddeeff, 2.0);
+    fill.position.set(-5, 2, 3);
+    scene.add(fill);
+
+    // Right fill
+    const right = new THREE.DirectionalLight(0xfff0e0, 2.0);
+    right.position.set(5, 2, 3);
+    scene.add(right);
+
+    // Top
+    const top = new THREE.DirectionalLight(0xffffff, 1.5);
+    top.position.set(0, 6, 2);
+    scene.add(top);
+
+    // Back fill — keeps the model lit when rotating
+    const back = new THREE.DirectionalLight(0xfff5e8, 2.5);
+    back.position.set(0, 2, -6);
+    scene.add(back);
+
+    // ── OrbitControls ──
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping    = true;
+    controls.dampingFactor    = 0.06;
+    controls.enableZoom       = true;
+    controls.enablePan        = false;
+    controls.minDistance      = 0.5;
+    controls.maxDistance      = 8;
+    controls.autoRotate       = true;
+    controls.autoRotateSpeed  = 1.2;
+
+    // Stop auto-rotate on user interaction, restart after 4s
+    let rotateTimer;
+    renderer.domElement.addEventListener('pointerdown', () => {
+      controls.autoRotate = false;
+      hint.style.opacity  = '0';
+      clearTimeout(rotateTimer);
+    });
+    renderer.domElement.addEventListener('pointerup', () => {
+      rotateTimer = setTimeout(() => { controls.autoRotate = true; }, 4000);
+    });
+
+    // ── Load model ──
+    const gltfLoader = new GLTFLoader();
+    gltfLoader.load('bjorn.glb', (gltf) => {
+      const model = gltf.scene;
+
+      // Center and scale
+      const box = new THREE.Box3().setFromObject(model);
+      const center = box.getCenter(new THREE.Vector3());
+      const size   = box.getSize(new THREE.Vector3());
+      const maxDim = Math.max(size.x, size.y, size.z);
+      const scale  = 2.0 / maxDim;
+
+      model.scale.setScalar(scale);
+      model.position.sub(center.multiplyScalar(scale));
+
+      // Shift left so text sits comfortably on the right
+      model.position.x -= 1.1;
+
+      scene.add(model);
+
+      // Point camera at model center
+      controls.target.set(model.position.x, 0, 0);
+      controls.update();
+
+      // Hide loader
+      loader.classList.add('hidden');
+    },
+    undefined,
+    (err) => console.error('GLB load error:', err));
+
+    // ── Resize ──
+    window.addEventListener('resize', () => {
+      const w = wrap.clientWidth, h = wrap.clientHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    });
+
+    // ── Render loop ──
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      renderer.render(scene, camera);
+    }
+    animate();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LiDAR Lab Tour — Bjorn Shockey</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:     #0a0a0a;
+      --fg:     #e8e0d0;
+      --accent: #b8956a;
+      --dim:    #6a6560;
+      --font-serif: 'EB Garamond', Georgia, serif;
+      --font-mono:  'JetBrains Mono', monospace;
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-serif);
+      overflow: hidden;
+    }
+
+    .page {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      gap: 3rem;
+    }
+
+    .header {
+      text-align: center;
+    }
+
+    .header h1 {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 400;
+      font-style: italic;
+      letter-spacing: -0.01em;
+      line-height: 1.1;
+    }
+
+    .header p {
+      margin-top: 0.75rem;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--dim);
+    }
+
+    .labs {
+      display: flex;
+      gap: 4rem;
+      align-items: stretch;
+    }
+
+    .lab-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.2rem;
+      text-decoration: none;
+      color: var(--fg);
+      padding: 2.5rem 3rem;
+      border: 1px solid #222;
+      transition: border-color 0.3s, background 0.3s;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .lab-card:hover {
+      border-color: var(--accent);
+      background: rgba(184, 149, 106, 0.04);
+    }
+
+    .lab-card.disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .lab-card .lab-name {
+      font-size: clamp(1.4rem, 3vw, 2rem);
+      font-weight: 400;
+      font-style: italic;
+    }
+
+    .lab-card .lab-sub {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--dim);
+    }
+
+    .lab-card .badge {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 0.2em 0.6em;
+    }
+
+    .lab-card.disabled .badge {
+      color: var(--dim);
+      border-color: var(--dim);
+    }
+
+    .back {
+      position: fixed;
+      top: 2rem;
+      left: 2rem;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--dim);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .back:hover {
+      color: var(--fg);
+      border-bottom-color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <a class="back" href="index.html">← Back</a>
+
+  <div class="page">
+    <div class="header">
+      <h1>LiDAR Lab Tour</h1>
+      <p>Select a laboratory</p>
+    </div>
+
+    <div class="labs">
+      <a class="lab-card" href="stadler-tour.html">
+        <span class="lab-name">Stadler Lab</span>
+        <span class="lab-sub">Rice University · Synthetic Biology</span>
+        <span class="badge">Tour Available</span>
+      </a>
+
+      <div class="lab-card disabled">
+        <span class="lab-name">Silberg Lab</span>
+        <span class="lab-sub">Rice University · Synthetic Biology</span>
+        <span class="badge">Coming Soon</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

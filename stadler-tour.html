@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stadler Lab Tour — Bjorn Shockey</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:     #0a0a0a;
+      --fg:     #e8e0d0;
+      --accent: #b8956a;
+      --dim:    #6a6560;
+      --font-serif: 'EB Garamond', Georgia, serif;
+      --font-mono:  'JetBrains Mono', monospace;
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: var(--bg);
+      color: var(--fg);
+      overflow: hidden;
+    }
+
+    canvas { display: block; }
+
+    /* ── Loader ── */
+    #loader {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg);
+      z-index: 100;
+      gap: 1.5rem;
+      transition: opacity 0.6s;
+    }
+
+    #loader h2 {
+      font-family: var(--font-serif);
+      font-size: 1.5rem;
+      font-weight: 400;
+      font-style: italic;
+      color: var(--fg);
+    }
+
+    #loader .progress-wrap {
+      width: 240px;
+      height: 1px;
+      background: #222;
+    }
+
+    #loader .progress-bar {
+      height: 1px;
+      background: var(--accent);
+      width: 0%;
+      transition: width 0.1s;
+    }
+
+    #loader .progress-label {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--dim);
+    }
+
+    #loader .loader-controls {
+      margin-top: 0.5rem;
+      display: flex;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    #loader .key-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    #loader .keys {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+
+    #loader .key-row {
+      display: flex;
+      gap: 3px;
+    }
+
+    #loader .key {
+      width: 32px;
+      height: 32px;
+      border: 1px solid #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      color: var(--fg);
+      background: #111;
+    }
+
+    #loader .key-label {
+      font-family: var(--font-mono);
+      font-size: 0.6rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--dim);
+    }
+
+    #loader .divider {
+      width: 1px;
+      height: 60px;
+      background: #222;
+    }
+
+    #loader .mouse-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    #loader .mouse-icon {
+      width: 24px;
+      height: 36px;
+      border: 1px solid #333;
+      border-radius: 12px 12px 8px 8px;
+      background: #111;
+      position: relative;
+    }
+
+    #loader .mouse-icon::after {
+      content: '';
+      position: absolute;
+      top: 5px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1px;
+      height: 10px;
+      background: var(--fg);
+      opacity: 0.5;
+    }
+
+    /* ── HUD ── */
+    #hud {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    #crosshair {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 12px; height: 12px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    #crosshair::before,
+    #crosshair::after {
+      content: '';
+      position: absolute;
+      background: rgba(232,224,208,0.6);
+    }
+
+    #crosshair::before {
+      width: 1px; height: 100%;
+      left: 50%; transform: translateX(-50%);
+    }
+
+    #crosshair::after {
+      height: 1px; width: 100%;
+      top: 50%; transform: translateY(-50%);
+    }
+
+    #hud.locked #crosshair { opacity: 1; }
+
+    #controls-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--fg);
+      text-align: center;
+      line-height: 2.2;
+      white-space: nowrap;
+      background: rgba(10,10,10,0.55);
+      padding: 0.6em 1.4em;
+      border: 1px solid #2a2a2a;
+      transition: opacity 0.6s;
+    }
+
+    /* stays visible when locked */
+    #hud.locked #controls-hint { opacity: 1; }
+
+    #click-prompt {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      transition: opacity 0.4s;
+    }
+
+    #click-prompt h3 {
+      font-family: var(--font-serif);
+      font-size: 1.8rem;
+      font-weight: 400;
+      font-style: italic;
+    }
+
+    #click-prompt p {
+      margin-top: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--dim);
+    }
+
+    #hud.locked #click-prompt { opacity: 0; }
+
+    .back {
+      position: fixed;
+      top: 2rem;
+      left: 2rem;
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--dim);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+      z-index: 20;
+      pointer-events: all;
+    }
+
+    .back:hover {
+      color: var(--fg);
+      border-bottom-color: var(--accent);
+    }
+
+    #hud.locked .back { opacity: 0; pointer-events: none; }
+  </style>
+</head>
+<body>
+
+  <div id="loader">
+    <h2>Stadler Lab</h2>
+    <div class="progress-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+    <span class="progress-label" id="progress-label">Loading scan…</span>
+
+    <div class="loader-controls">
+      <div class="key-group">
+        <div class="keys">
+          <div class="key-row"><div class="key">W</div></div>
+          <div class="key-row">
+            <div class="key">A</div>
+            <div class="key">S</div>
+            <div class="key">D</div>
+          </div>
+        </div>
+        <span class="key-label">Move</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="mouse-group">
+        <div class="mouse-icon"></div>
+        <span class="key-label">Look</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="key-group">
+        <div class="keys">
+          <div class="key-row"><div class="key" style="width:56px;font-size:0.55rem;">ESC</div></div>
+        </div>
+        <span class="key-label">Exit</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="hud">
+    <div id="crosshair"></div>
+    <div id="click-prompt">
+      <h3>Stadler Lab</h3>
+      <p>Click to explore · ESC to exit</p>
+    </div>
+    <div id="controls-hint">
+      W A S D — move &nbsp;·&nbsp; Mouse — look &nbsp;·&nbsp; ESC — exit
+    </div>
+  </div>
+
+  <a class="back" href="lab-tour.html">← Labs</a>
+
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
+
+    // ── Scene ──
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0a0a0a);
+    scene.fog = new THREE.Fog(0x0a0a0a, 15, 60);
+
+    const camera = new THREE.PerspectiveCamera(70, innerWidth / innerHeight, 0.01, 100);
+    camera.position.set(0, 1.6, 0);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    document.body.appendChild(renderer.domElement);
+
+    // ── Lights ──
+    scene.add(new THREE.AmbientLight(0xffffff, 1.2));
+    const dir = new THREE.DirectionalLight(0xfff5e0, 0.8);
+    dir.position.set(5, 10, 5);
+    scene.add(dir);
+
+    // ── Controls ──
+    const controls = new PointerLockControls(camera, document.body);
+    const hud = document.getElementById('hud');
+
+    document.body.addEventListener('click', () => {
+      if (!controls.isLocked) controls.lock();
+    });
+
+    controls.addEventListener('lock', () => hud.classList.add('locked'));
+    controls.addEventListener('unlock', () => hud.classList.remove('locked'));
+
+    // ── Movement ──
+    const keys = {};
+    document.addEventListener('keydown', e => { keys[e.code] = true; });
+    document.addEventListener('keyup',   e => { keys[e.code] = false; });
+
+    const velocity = new THREE.Vector3();
+    const direction = new THREE.Vector3();
+    const SPEED = 3.0;
+
+    // ── Load GLB ──
+    const loader = new GLTFLoader();
+    const bar = document.getElementById('progress-bar');
+    const label = document.getElementById('progress-label');
+    const loaderEl = document.getElementById('loader');
+
+    loader.load(
+      'stadler_lab.glb',
+      (gltf) => {
+        scene.add(gltf.scene);
+
+        // Centre camera on model
+        const box = new THREE.Box3().setFromObject(gltf.scene);
+        const centre = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+        // Start 1.6m above floor, near centre
+        camera.position.set(centre.x, box.min.y + 1.6, centre.z + size.z * 0.3);
+
+        // Fade out loader
+        loaderEl.style.opacity = '0';
+        setTimeout(() => loaderEl.style.display = 'none', 700);
+      },
+      (xhr) => {
+        if (xhr.total) {
+          const pct = Math.round((xhr.loaded / xhr.total) * 100);
+          bar.style.width = pct + '%';
+          label.textContent = pct + '%';
+        }
+      },
+      (err) => {
+        console.error(err);
+        label.textContent = 'Error loading scan.';
+      }
+    );
+
+    // ── Animate ──
+    let prev = performance.now();
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const now = performance.now();
+      const delta = Math.min((now - prev) / 1000, 0.1);
+      prev = now;
+
+      if (controls.isLocked) {
+        direction.set(0, 0, 0);
+        if (keys['KeyW'] || keys['ArrowUp'])    direction.z -= 1;
+        if (keys['KeyS'] || keys['ArrowDown'])  direction.z += 1;
+        if (keys['KeyA'] || keys['ArrowLeft'])  direction.x -= 1;
+        if (keys['KeyD'] || keys['ArrowRight']) direction.x += 1;
+
+        if (direction.lengthSq() > 0) direction.normalize();
+
+        velocity.x = direction.x * SPEED;
+        velocity.z = direction.z * SPEED;
+
+        controls.moveRight(velocity.x * delta);
+        controls.moveForward(-velocity.z * delta);
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+
+    window.addEventListener('resize', () => {
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    });
+  </script>
+</body>
+</html>
