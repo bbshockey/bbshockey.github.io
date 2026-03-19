@@ -146,8 +146,8 @@
       top: 1.2rem;
       right: 2rem;
       z-index: 10;
-      width: 100px;
-      height: 100px;
+      width: 130px;
+      height: 130px;
       pointer-events: none;
     }
     #corner-logo svg {
@@ -159,8 +159,8 @@
       top: 1.2rem;
       left: 2rem;
       z-index: 10;
-      width: 100px;
-      height: 100px;
+      width: 130px;
+      height: 130px;
       pointer-events: none;
     }
     #corner-logo-left svg {
@@ -197,6 +197,81 @@
       color: var(--dim);
       opacity: 1;
       transition: opacity 1s;
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 768px) {
+      #topnav {
+        gap: 1.2em;
+        top: 1rem;
+      }
+      #topnav a {
+        font-size: 0.6rem;
+        letter-spacing: 0.08em;
+      }
+      #corner-logo {
+        width: 56px;
+        height: 56px;
+        top: 0.6rem;
+        right: 0.75rem;
+      }
+      #corner-logo-left {
+        width: 56px;
+        height: 56px;
+        top: 0.6rem;
+        left: 0.75rem;
+      }
+
+      /* #intro becomes a full-viewport overlay with named areas */
+      #intro {
+        position: absolute;
+        inset: 0;
+        right: auto;
+        top: auto;
+        transform: none;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        padding: 7rem 1.5rem 1.5rem;
+      }
+
+      /* Name sits at the top above the model */
+      #intro .name {
+        font-size: clamp(2rem, 9vw, 3rem);
+        margin-top: 0;
+      }
+
+      /* Tagline just below name */
+      #intro .tagline {
+        font-size: 0.6rem;
+        margin-top: 0.5em;
+        line-height: 1.6;
+      }
+
+      /* Spacer so model shows through the middle */
+      #intro .spacer {
+        flex: 1;
+      }
+
+      /* Links sit at the bottom, surrounding the feet */
+      #intro .links {
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 0.9em 1.4em;
+        margin-top: 0;
+        width: 100%;
+      }
+      #intro .links a {
+        font-size: 0.62rem;
+      }
+      #hint {
+        bottom: 1rem;
+        font-size: 0.5rem;
+      }
     }
 
     /* ── Loading overlay ── */
@@ -241,6 +316,7 @@
         Systems · Synthetic · Physical Biology<br>
         <a href="https://sspb.rice.edu/" target="_blank" class="tagline-link">PhD Student at Rice University</a>
       </div>
+      <div class="spacer"></div>
       <div class="links">
         <a href="https://scholar.google.com/citations?user=psg0-oAAAAAJ&hl=en" target="_blank">Scholar</a>
         <a href="https://github.com/bbshockey" target="_blank">GitHub</a>
@@ -270,9 +346,12 @@
     import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
     import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-    const wrap   = document.getElementById('canvas-wrap');
-    const loader = document.getElementById('loader');
-    const hint   = document.getElementById('hint');
+    const wrap    = document.getElementById('canvas-wrap');
+    const loader  = document.getElementById('loader');
+    const hint    = document.getElementById('hint');
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+
+    if (isMobile) hint.textContent = 'tap to interact';
 
     // ── Renderer ──
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -354,13 +433,13 @@
       model.scale.setScalar(scale);
       model.position.sub(center.multiplyScalar(scale));
 
-      // Shift left so text sits comfortably on the right
-      model.position.x -= 1.1;
+      // Shift left on desktop so text sits comfortably on the right
+      if (!isMobile) model.position.x -= 1.1;
 
       scene.add(model);
 
       // Point camera at model center
-      controls.target.set(model.position.x, 0, 0);
+      controls.target.set(isMobile ? 0 : model.position.x, 0, 0);
       controls.update();
 
       // Hide loader
