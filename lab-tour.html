@@ -59,22 +59,24 @@
 
     .labs {
       display: flex;
-      gap: 4rem;
+      gap: 2rem;
       align-items: stretch;
+      justify-content: center;
     }
 
     .lab-card {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 1.2rem;
+      gap: 1.4rem;
       text-decoration: none;
       color: var(--fg);
-      padding: 2.5rem 3rem;
+      padding: 2.5rem 3rem 2rem;
       border: 1px solid #222;
       transition: border-color 0.3s, background 0.3s;
       cursor: pointer;
       position: relative;
+      width: 280px;
     }
 
     .lab-card:hover {
@@ -83,23 +85,34 @@
     }
 
     .lab-card.disabled {
-      opacity: 0.35;
+      opacity: 0.4;
       cursor: not-allowed;
       pointer-events: none;
     }
 
-    .lab-card .lab-name {
-      font-size: clamp(1.4rem, 3vw, 2rem);
-      font-weight: 400;
-      font-style: italic;
+    /* Logo container — fixed height so cards stay aligned */
+    .lab-card .logo-wrap {
+      width: 200px;
+      height: 160px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .lab-card .logo-wrap object {
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
     }
 
     .lab-card .lab-sub {
       font-family: var(--font-mono);
-      font-size: 0.65rem;
+      font-size: 0.62rem;
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--dim);
+      text-align: center;
     }
 
     .lab-card .badge {
@@ -148,13 +161,17 @@
 
     <div class="labs">
       <a class="lab-card" href="stadler-tour.html">
-        <span class="lab-name">Stadler Lab</span>
+        <div class="logo-wrap">
+          <object type="image/svg+xml" data="logo.svg"></object>
+        </div>
         <span class="lab-sub">Rice University · Synthetic Biology</span>
         <span class="badge">Tour Available</span>
       </a>
 
       <div class="lab-card disabled">
-        <span class="lab-name">Silberg Lab</span>
+        <div class="logo-wrap">
+          <object type="image/svg+xml" data="silberg_logo.svg"></object>
+        </div>
         <span class="lab-sub">Rice University · Synthetic Biology</span>
         <span class="badge">Coming Soon</span>
       </div>
