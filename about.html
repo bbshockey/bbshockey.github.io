@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About — Bjorn Shockey</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=IBM+Plex+Mono:wght@300;400&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #0d0d0d;
+      --fg:      #f0ece4;
+      --dim:     #6b6860;
+      --accent:  #c8b89a;
+      --font-serif: 'Cormorant Garamond', Georgia, serif;
+      --font-mono:  'IBM Plex Mono', 'Courier New', monospace;
+    }
+
+    html, body {
+      width: 100%;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--font-mono);
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
+    /* ══════════════════════════════
+       SECTION 1 — Hero (full screen)
+    ══════════════════════════════ */
+    #hero {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Spline background */
+    #spline-wrap {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+    }
+    #spline-wrap iframe {
+      width: 100%;
+      height: calc(100% + 60px);
+      border: none;
+      display: block;
+      filter: invert(1) hue-rotate(180deg);
+    }
+
+    /* Fade bottom into bg */
+    #hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 35%;
+      background: linear-gradient(to bottom, transparent, var(--bg));
+      pointer-events: none;
+      z-index: 5;
+    }
+
+    /* Back nav */
+    #back {
+      position: absolute;
+      top: 2rem;
+      left: 2.5rem;
+      z-index: 20;
+    }
+    #back a {
+      font-family: var(--font-mono);
+      font-size: 0.65rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--dim);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    #back a:hover { color: var(--accent); border-bottom-color: var(--accent); }
+
+    /* Spline credit */
+    #spline-credit {
+      position: absolute;
+      bottom: 1rem;
+      right: 1.2rem;
+      z-index: 20;
+      font-family: var(--font-mono);
+      font-size: 0.48rem;
+      letter-spacing: 0.08em;
+      color: var(--dim);
+      opacity: 0.28;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+    #spline-credit:hover { opacity: 0.7; }
+
+    /* Title overlay — bottom of hero */
+    #hero-text {
+      position: absolute;
+      top: 50%;
+      left: 0; right: 0;
+      transform: translateY(-50%);
+      z-index: 10;
+      text-align: center;
+      padding: 0 3rem;
+      pointer-events: none;
+    }
+    #hero-text .label {
+      font-family: var(--font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--dim);
+      margin-bottom: 1.2rem;
+    }
+    #hero-text h1 {
+      font-family: var(--font-serif);
+      font-size: clamp(2.8rem, 6vw, 5.2rem);
+      font-weight: 300;
+      line-height: 1.15;
+      color: var(--fg);
+    }
+    #hero-text h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    /* Scroll hint */
+    #scroll-hint {
+      position: absolute;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      font-family: var(--font-mono);
+      font-size: 0.55rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--dim);
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; }
+      50%       { opacity: 0.9; }
+    }
+
+    /* ══════════════════════════════
+       SECTION 2 — Bio content
+    ══════════════════════════════ */
+    #bio {
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 6rem 2rem 6rem;
+      text-align: center;
+    }
+
+    #bio p {
+      font-family: var(--font-mono);
+      font-size: clamp(0.82rem, 1.5vw, 0.98rem);
+      line-height: 2.2;
+      color: var(--dim);
+      max-width: 600px;
+      margin-bottom: 2rem;
+    }
+    #bio p + p {
+      margin-top: 0;
+    }
+    #bio p strong {
+      color: var(--fg);
+      font-weight: 400;
+    }
+    #bio p a {
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px solid rgba(200,184,154,0.35);
+      transition: border-color 0.2s, color 0.2s;
+    }
+    #bio p a:hover {
+      color: var(--fg);
+      border-bottom-color: var(--fg);
+    }
+    #bio p.reach-out {
+      font-style: italic;
+      font-size: clamp(0.65rem, 1.1vw, 0.75rem);
+      opacity: 0.6;
+      margin-bottom: 3rem;
+    }
+
+    /* Thin horizontal rule above links */
+    .rule {
+      width: 40px;
+      height: 1px;
+      background: var(--accent);
+      opacity: 0.3;
+      margin: 0 auto 3rem;
+    }
+
+    /* Links */
+    #bio .links {
+      display: flex;
+      gap: 2em;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    #bio .links a {
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--dim);
+      text-decoration: none;
+      border-bottom: 1px solid transparent;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    #bio .links a:hover {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+
+    /* ── Mobile ── */
+    @media (max-width: 768px) {
+      #hero-text h1 { font-size: 2.2rem; }
+      #bio { padding: 5rem 1.5rem 5rem; min-height: auto; }
+      #bio .links { gap: 1.4em; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── HERO ── -->
+  <section id="hero">
+    <div id="spline-wrap">
+      <iframe src="https://my.spline.design/dnaparticles-UlUSTNQHce9BkIwBG7zJUYu0/" frameborder="0"></iframe>
+    </div>
+
+    <nav id="back"><a href="index.html">← Home</a></nav>
+    <a id="spline-credit" href="https://spline.design" target="_blank">3D via Spline</a>
+
+    <div id="hero-text">
+      <div class="label">About Me</div>
+      <h1>Using synthetic biology to better understand<br><em>microbial gene transfer</em> towards precise microbiome editing.</h1>
+    </div>
+
+    <div id="scroll-hint">↓</div>
+  </section>
+
+  <!-- ── BIO ── -->
+  <section id="bio">
+    <p>
+      I'm <strong>Bjorn Shockey</strong>, a PhD student in
+      <strong>Systems, Synthetic &amp; Physical Biology</strong> at
+      <strong>Rice University</strong>, working across the
+      <strong>Silberg</strong> and <strong>Stadler</strong> labs.
+      I aim to deploy engineered microbes reliably within complex microbiomes
+      toward enabling <strong>ecological recovery, agricultural improvement,
+      and therapeutic advancement</strong>. In my PhD, I am studying how
+      <strong>gene transfer behavior</strong> vary across abiotic and biotic
+      conditions and the downstream effects on microbial fitness at the
+      community scale.
+    </p>
+    <p>
+      Successes like <strong>AlphaFold</strong> underscore the transformative
+      potential of <strong>ML/AI</strong> for forecasting across complex
+      parameter spaces, when trained on abundant and high-resolution data.
+      Researchers often face a tradeoff between data quantity and resolution,
+      since combining both remains cost-prohibitive. I hypothesize that this
+      tradeoff limits the effectiveness of building ML/AI models for predicting
+      <strong>horizontal gene transfer</strong> in a community. My current
+      project aims to improve resolution while maintaining throughput of gene
+      transfer measurement, using our
+      <a href="https://www.nature.com/articles/s41587-025-02593-0" target="_blank"><strong>ribozyme barcoding technology</strong></a>
+      developed at Rice University.
+    </p>
+    <p class="reach-out">
+      Please reach out — I am always happy to discuss science!
+    </p>
+    <div class="rule"></div>
+    <div class="links">
+      <a href="https://scholar.google.com/citations?user=psg0-oAAAAAJ&hl=en" target="_blank">Scholar</a>
+      <a href="https://github.com/bbshockey" target="_blank">GitHub</a>
+      <a href="https://www.linkedin.com/in/bjorn-shockey-1419a2166/" target="_blank">LinkedIn</a>
+      <a href="https://www.silberglab.org/" target="_blank">Silberg Lab</a>
+      <a href="https://stadler.rice.edu/" target="_blank">Stadler Lab</a>
+      <a href="mailto:bs128@rice.edu">Contact</a>
+    </div>
+  </section>
+
+</body>
+</html>
