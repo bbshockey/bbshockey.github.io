@@ -51,9 +51,9 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:   #0d0d0d;
+      --bg:   #141210;
       --fg:   #f0ece4;
-      --dim:  #6b6860;
+      --dim:  #9a9490;
       --accent: #c8b89a;
       --font-serif: 'Cormorant Garamond', Georgia, serif;
       --font-mono:  'IBM Plex Mono', 'Courier New', monospace;
@@ -65,6 +65,18 @@
       color: var(--fg);
       font-family: var(--font-mono);
       overflow: hidden;
+    }
+
+    /* ── Grain overlay ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0.035;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
     }
 
     /* ── Google Fonts ── */
